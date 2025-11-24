@@ -1,0 +1,15 @@
+﻿# Python
+__pycache__
+*.pyc
+.venv/
+env/
+venv/
+*.egg-info/
+
+# Data & models (keep local, don't bake raw data)
+data/*
+models/*
+
+# System
+.DS_Store
+.vscode
