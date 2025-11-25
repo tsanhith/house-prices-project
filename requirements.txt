@@ -4,8 +4,9 @@ matplotlib
 scikit-learn
 joblib
 fastapi
-uvicorn[standard]
 pydantic
 pytest
 python-dotenv
+uvicorn[standard]
 httpx
+pytest-cov
