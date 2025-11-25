@@ -1,6 +1,6 @@
 ﻿FROM python:3.11-slim
 
-# required system deps for building some Python packages (kept minimal)
+# minimal system deps for building packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       build-essential \
@@ -20,14 +20,15 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # copy app code
 COPY . /app
 
-# ensure entrypoint is executable
-RUN chmod +x /app/entrypoint.sh
+# ensure python sees the package
+ENV PYTHONPATH=/app
 
-# use a non-root user
+# create a non-root user and use it
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 USER appuser
 
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+# start uvicorn directly (no entrypoint.sh to avoid CRLF/executable issues)
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
