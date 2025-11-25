@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -37,10 +37,10 @@ jobs:
           pytest -q
 
   docker-build:
-    name: Build Docker image (optional)
+    name: Build (and optionally push) Docker image
     runs-on: ubuntu-latest
     needs: test
-    if: always()    # runs but will not push without secrets
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,18 +51,28 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to DockerHub (if credentials provided)
-        if: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build (and optionally push) image
+      - name: Build image (no push)
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          push: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}  # push only if secrets exist
-          tags: ${{ secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN && format('{0}/house-prices-api:latest', secrets.DOCKERHUB_USERNAME) }}
+          push: false
+          tags: house-prices-api:ci
+
+      - name: Log in to DockerHub (if creds provided)
+        if: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push image to DockerHub (only if creds provided)
+        if: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/house-prices-api:latest
