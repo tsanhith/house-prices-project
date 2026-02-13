@@ -2,9 +2,10 @@
 
 Short: End-to-end pipeline using Kaggle 'House Prices — Advanced Regression Techniques'.  
 - EDA: src/eda.py, notebook 
-otebooks/01-eda.ipynb  
-- Train: python -m src.train (saves models/baseline.pkl and eports/metrics.json)  
-- API: uvicorn app.main:app --reload --port 8000 -> POST /predict
+otebooks/01-eda.ipynb.
+- Train: python -m src.train (saves models/baseline.pkl and 
+eports/metrics.json).
+- API: uvicorn app.main:app --reload --port 8000 -> POST /predict.
 
 ## Quick start
 1. Clone: git clone https://github.com/tsanhith/house-prices-project.git
@@ -34,3 +35,4 @@ Content-Type: application/json
     { "feature": "YearBuilt", "contribution": -515825.44 }
   ]
 }
+
